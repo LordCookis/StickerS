@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar'
 import { StyleSheet, Text, View, Image } from 'react-native'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { GestureHandlerRootView } from "react-native-gesture-handler"
 import * as ImagePicker from 'expo-image-picker'
 import ImageViewer from './components/ImageViewer'
 import Button from './components/Button'
@@ -8,6 +9,7 @@ import CircleButton from './components/CircleButton'
 import IconButton from './components/IconButton'
 import EmojiPicker from './components/EmojiPicker'
 import EmojiList from './components/EmojiList'
+import EmojiSticker from './components/EmojiSticker'
 
 const PlaceholderImage = require('./assets/images/Кагуинька~.png')
 
@@ -16,6 +18,7 @@ export default function App() {
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)
   const [pickedEmoji, setPickedEmoji] = useState(null)
+  const [emojis, setEmojis] = useState([])
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -35,6 +38,14 @@ export default function App() {
   }
 
   const onAddSticker = () => {
+    const newEmoji = {
+      id: Date.now(),
+      source: pickedEmoji,
+      imageSize: 40,
+      positionX: 100,
+      positionY: 100,
+    }
+    setEmojis([...emojis, newEmoji])
     setIsModalVisible(true)
   }
 
@@ -43,16 +54,26 @@ export default function App() {
   }
 
   const onSaveImageAsync = async () => {
-    // we will implement this later
+
   }
 
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer
           placeholderImageSource={PlaceholderImage}
           selectedImage={selectedImage}
         />
+        {emojis.map((emoji) => (
+          <EmojiSticker
+            key={emoji.id}
+            imageSize={emoji.imageSize}
+            stickerSource={emoji.source}
+            positionX={emoji.positionX}
+            positionY={emoji.positionY}
+          />,
+          alert(1)
+        ))}
       </View>
       <View style={styles.footerContainer}>
         {showAppOptions ? (
@@ -73,8 +94,8 @@ export default function App() {
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose}/>
       </EmojiPicker>
-      <StatusBar style="auto"/>
-    </View>
+      <StatusBar style="light"/>
+    </GestureHandlerRootView>
   )
 }
 
