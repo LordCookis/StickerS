@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar'
-import { StyleSheet, Text, View, Image } from 'react-native'
-import { useEffect, useState } from 'react'
+import { styles } from './styles/styles'
+import { View } from 'react-native'
+import { useState } from 'react'
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import * as ImagePicker from 'expo-image-picker'
 import ImageViewer from './components/ImageViewer'
@@ -17,8 +18,8 @@ export default function App() {
   const [showAppOptions, setShowAppOptions] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)
-  const [pickedEmoji, setPickedEmoji] = useState(null)
-  const [emojis, setEmojis] = useState([])
+  const [pickedEmoji, setPickedEmoji] = useState([])
+  const [thisPickedEmoji, setThisPickedEmoji] = useState(null)
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -35,18 +36,17 @@ export default function App() {
 
   const onReset = () => {
     setShowAppOptions(false)
+    setPickedEmoji([])
+    setThisPickedEmoji(null)
   }
 
   const onAddSticker = () => {
-    const newEmoji = {
-      id: Date.now(),
-      source: pickedEmoji,
-      imageSize: 40,
-      positionX: 100,
-      positionY: 100,
-    }
-    setEmojis([...emojis, newEmoji])
     setIsModalVisible(true)
+  }
+
+  const addSticker = (sticker) => {
+    setPickedEmoji([...pickedEmoji, sticker])
+    setThisPickedEmoji(sticker)
   }
 
   const onModalClose = () => {
@@ -64,16 +64,7 @@ export default function App() {
           placeholderImageSource={PlaceholderImage}
           selectedImage={selectedImage}
         />
-        {emojis.map((emoji) => (
-          <EmojiSticker
-            key={emoji.id}
-            imageSize={emoji.imageSize}
-            stickerSource={emoji.source}
-            positionX={emoji.positionX}
-            positionY={emoji.positionY}
-          />,
-          alert(1)
-        ))}
+        {pickedEmoji?.map((emoji, index) => <EmojiSticker imageSize={40} stickerSource={emoji} key={index} setThisPickedEmoji={setThisPickedEmoji}/>)}
       </View>
       <View style={styles.footerContainer}>
         {showAppOptions ? (
@@ -92,33 +83,9 @@ export default function App() {
         )}
       </View>
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
-        <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose}/>
+        <EmojiList onSelect={addSticker} onCloseModal={onModalClose}/>
       </EmojiPicker>
       <StatusBar style="light"/>
     </GestureHandlerRootView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#121013',
-    alignItems: 'center',
-  },
-  imageContainer: {
-    flex: 1,
-    paddingTop: 58,
-  },
-  footerContainer: {
-    flex: 1 / 3,
-    alignItems: 'center',
-  },
-  optionsContainer: {
-    position: 'absolute',
-    bottom: 80,
-  },
-  optionsRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-})

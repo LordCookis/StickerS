@@ -2,23 +2,25 @@ import { View, Image } from 'react-native'
 import { PanGestureHandler, TapGestureHandler } from 'react-native-gesture-handler'
 import Animated, { useAnimatedStyle, useSharedValue, useAnimatedGestureHandler, withSpring, } from 'react-native-reanimated'
 
-export default function EmojiSticker({imageSize, stickerSource, positionX, positionY }) {
+export default function EmojiSticker({imageSize, stickerSource, setThisPickedEmoji}) {
   const AnimatedView = Animated.createAnimatedComponent(View)
   const AnimatedImage = Animated.createAnimatedComponent(Image)
   const scaleImage = useSharedValue(imageSize)
-  const translateX = useSharedValue(positionX)
-  const translateY = useSharedValue(positionY)
+  const translateX = useSharedValue(0)
+  const translateY = useSharedValue(0)
 
   const onDrag = useAnimatedGestureHandler({
     onStart: (event, context) => {
-      context.translateX = translateX.value;
-      context.translateY = translateY.value;
+      context.translateX = translateX.value
+      context.translateY = translateY.value
     },
     onActive: (event, context) => {
-      translateX.value = event.translationX + context.translateX;
-      translateY.value = event.translationY + context.translateY;
+      translateX.value = event.translationX + context.translateX
+      translateY.value = event.translationY + context.translateY
     },
-  });
+  })
+
+  const thisEmoji = () => {setThisPickedEmoji(stickerSource)}
 
   const containerStyle = useAnimatedStyle(() => {
     return {
@@ -35,8 +37,10 @@ export default function EmojiSticker({imageSize, stickerSource, positionX, posit
 
   const onDoubleTap = useAnimatedGestureHandler({
     onActive: () => {
-      if (scaleImage.value !== imageSize * 2) {
-        scaleImage.value = scaleImage.value * 2
+      if (scaleImage.value !== imageSize * 2.5) {
+        scaleImage.value = scaleImage.value * 2.5
+      } else {
+        scaleImage.value = scaleImage.value / 2.5
       }
     },
   })
@@ -49,7 +53,7 @@ export default function EmojiSticker({imageSize, stickerSource, positionX, posit
   })
 
   return (
-    <PanGestureHandler onGestureEvent={onDrag}>
+    <PanGestureHandler onGestureEvent={onDrag} onTouchEnd={thisEmoji}>
       <AnimatedView style={[containerStyle, {top: -350}]}>
         <TapGestureHandler onGestureEvent={onDoubleTap} numberOfTaps={2}>
           <AnimatedImage
