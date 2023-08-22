@@ -47,9 +47,9 @@ export const styles = StyleSheet.create({
     fontFamily: 'monospace'
   },
   circleButtonContainer: {
-    width: 85,
-    height: 85,
-    marginHorizontal: 60,
+    width: 80,
+    height: 80,
+    marginHorizontal: 40,
     borderWidth: 3,
     borderColor: '#ff8ab1',
     borderRadius: 100,
@@ -106,6 +106,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   iconButton: {
+    height: 70,
+    width: 70,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -113,11 +115,18 @@ export const styles = StyleSheet.create({
     color: '#ffffff',
     marginTop: 10,
   },
-  image: {
+  imageView: {
     width: 320,
     height: 440,
+    justifyContent: "center",
+    alignItems: "center",
     borderWidth: 3,
     borderRadius: 15,
     borderColor: "#f19cbb",
+    overflow: "hidden",
   },
+  image: {
+    width: 320,
+    height: 440,
+  }
 })

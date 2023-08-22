@@ -2,7 +2,7 @@ import { styles } from '../styles/styles'
 import { Modal, View, Text, Pressable } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 
-export default function EmojiPicker({ isVisible, children, onClose }) {
+export default function EmojiPicker({isVisible, children, onClose}) {
   return (
     <Modal animationType="slide" transparent={true} visible={isVisible}>
       <View style={styles.modalContent}>

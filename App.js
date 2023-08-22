@@ -1,16 +1,17 @@
 import { StatusBar } from 'expo-status-bar'
 import { styles } from './styles/styles'
 import { View } from 'react-native'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import * as ImagePicker from 'expo-image-picker'
+import * as MediaLibrary from 'expo-media-library'
+import { captureRef } from 'react-native-view-shot'
 import ImageViewer from './components/ImageViewer'
 import Button from './components/Button'
 import CircleButton from './components/CircleButton'
 import IconButton from './components/IconButton'
 import EmojiPicker from './components/EmojiPicker'
 import EmojiList from './components/EmojiList'
-import EmojiSticker from './components/EmojiSticker'
 
 const PlaceholderImage = require('./assets/images/Кагуинька~.png')
 
@@ -20,6 +21,12 @@ export default function App() {
   const [selectedImage, setSelectedImage] = useState(null)
   const [pickedEmoji, setPickedEmoji] = useState([])
   const [thisPickedEmoji, setThisPickedEmoji] = useState(null)
+  const [status, requestPermission] = MediaLibrary.usePermissions()
+  const imageRef = useRef()
+
+  if (status === null) {
+    requestPermission()
+  }
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -54,25 +61,41 @@ export default function App() {
   }
 
   const onSaveImageAsync = async () => {
-
+    try {
+      const localUri = await captureRef(imageRef, {
+        height: 440,
+        quality: 1,
+      })
+      await MediaLibrary.saveToLibraryAsync(localUri)
+      if (localUri) {
+        alert("Сохранено!")
+      }
+    } catch(e) {
+      console.log(e)
+    }
   }
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.imageContainer}>
-        <ImageViewer
-          placeholderImageSource={PlaceholderImage}
-          selectedImage={selectedImage}
-        />
-        {pickedEmoji?.map((emoji, index) => <EmojiSticker imageSize={40} stickerSource={emoji} key={index} setThisPickedEmoji={setThisPickedEmoji}/>)}
+        <View style={styles.imageView}>
+          <View ref={imageRef} collapsable={false}>
+            <ImageViewer
+              placeholderImageSource={PlaceholderImage}
+              selectedImage={selectedImage}
+              pickedEmoji={pickedEmoji}
+              setThisPickedEmoji={setThisPickedEmoji}
+            />
+          </View>
+        </View>
       </View>
       <View style={styles.footerContainer}>
         {showAppOptions ? (
           <View style={styles.optionsContainer}>
             <View style={styles.optionsRow}>
-              <IconButton icon="refresh" label="Reset" onPress={onReset}/>
+              <IconButton icon="refresh" label="Сбросить" onPress={onReset}/>
               <CircleButton onPress={onAddSticker}/>
-              <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync}/>
+              <IconButton icon="save-alt" label="Сохранить" onPress={onSaveImageAsync}/>
             </View>
           </View>
         ) : (
