@@ -13,12 +13,10 @@ import IconButton from './components/IconButton'
 import EmojiPicker from './components/EmojiPicker'
 import EmojiList from './components/EmojiList'
 
-const PlaceholderImage = require('./assets/images/Кагуинька~.png')
-
 export default function App() {
   const [showAppOptions, setShowAppOptions] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const [selectedImage, setSelectedImage] = useState(null)
+  const [selectedImage, setSelectedImage] = useState(require('./assets/images/Кагуинька~.png'))
   const [pickedEmoji, setPickedEmoji] = useState([])
   const [thisPickedEmoji, setThisPickedEmoji] = useState(null)
   const [status, requestPermission] = MediaLibrary.usePermissions()
@@ -81,7 +79,6 @@ export default function App() {
         <View style={styles.imageView}>
           <View ref={imageRef} collapsable={false}>
             <ImageViewer
-              placeholderImageSource={PlaceholderImage}
               selectedImage={selectedImage}
               pickedEmoji={pickedEmoji}
               setThisPickedEmoji={setThisPickedEmoji}
